@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Student Information System{% endblock %}
+
+{% block content %}
+<h1>Welcome to Student Information System</h1>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h2>Total Students</h2>
+        <p style="font-size: 2.5rem; color: #3498db; font-weight: bold;">{{ total_students }}</p>
+    </div>
+    
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h2>Total Courses</h2>
+        <p style="font-size: 2.5rem; color: #27ae60; font-weight: bold;">{{ total_courses }}</p>
+    </div>
+</div>
+
+<p>This system helps manage student information, courses, and grades efficiently.</p>
+{% endblock %}

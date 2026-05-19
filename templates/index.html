@@ -5,17 +5,33 @@
 {% block content %}
 <h1>Welcome to Student Information System</h1>
 
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0;">
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin: 2rem 0;">
     <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <h2>Total Students</h2>
+        <h2 style="font-size: 1rem; color: #666;">Total Students</h2>
         <p style="font-size: 2.5rem; color: #3498db; font-weight: bold;">{{ total_students }}</p>
     </div>
     
     <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-        <h2>Total Courses</h2>
+        <h2 style="font-size: 1rem; color: #666;">Total Courses</h2>
         <p style="font-size: 2.5rem; color: #27ae60; font-weight: bold;">{{ total_courses }}</p>
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h2 style="font-size: 1rem; color: #666;">Total Enrollments</h2>
+        <p style="font-size: 2.5rem; color: #e74c3c; font-weight: bold;">{{ total_enrollments }}</p>
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+        <h2 style="font-size: 1rem; color: #666;">Grades Recorded</h2>
+        <p style="font-size: 2.5rem; color: #f39c12; font-weight: bold;">{{ total_grades }}</p>
     </div>
 </div>
 
-<p>This system helps manage student information, courses, and grades efficiently.</p>
+<div style="background: white; padding: 2rem; border-radius: 8px; margin-top: 2rem;">
+    <p>This system helps manage student information, courses, grades and enrollments efficiently.</p>
+    <div style="margin-top: 1rem;">
+        <a href="/students" class="btn" style="margin-right: 1rem;">Manage Students</a>
+        <a href="/courses" class="btn">Manage Courses</a>
+    </div>
+</div>
 {% endblock %}

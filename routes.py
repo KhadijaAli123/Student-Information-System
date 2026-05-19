@@ -10,9 +10,14 @@ def index():
     """Home page with basic statistics"""
     total_students = Student.query.count()
     total_courses = Course.query.count()
+    total_enrollments = db.session.query(enrollments).count()
+    total_grades = Grade.query.count()
+    
     return render_template('index.html', 
                          total_students=total_students,
-                         total_courses=total_courses)
+                         total_courses=total_courses,
+                         total_enrollments=total_enrollments,
+                         total_grades=total_grades)
 
 @main_bp.route('/health')
 def health():

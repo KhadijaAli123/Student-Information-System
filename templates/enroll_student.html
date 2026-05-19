@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Enroll Student - Student Information System{% endblock %}
+
+{% block content %}
+<h1>Enroll Student in Course</h1>
+
+<div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; margin-top: 2rem;">
+    <form method="POST" action="{{ url_for('main.enroll_student', course_id=course.id) }}">
+        <div style="margin-bottom: 1.5rem;">
+            <label for="student_id">Select Student <span style="color: red;">*</span></label><br>
+            <select id="student_id" name="student_id" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">-- Choose a Student --</option>
+                {% for student in available_students %}
+                <option value="{{ student.id }}">{{ student.roll_number }} - {{ student.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <button type="submit" class="btn btn-success">Enroll Student</button>
+            <a href="{{ url_for('main.view_course', course_id=course.id) }}" class="btn" style="background-color: #95a5a6;">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div style="margin-top: 3rem; background: white; padding: 2rem; border-radius: 8px;">
+    <h2>Current Enrollments for {{ course.name }}</h2>
+    {% if course.students %}
+    <table>
+        <thead>
+            <tr>
+                <th>Roll Number</th>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in course.students %}
+            <tr>
+                <td>{{ student.roll_number }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.email }}</td>
+                <td>
+                    <a href="{{ url_for('main.remove_enrollment', course_id=course.id, student_id=student.id) }}" class="btn" onclick="return confirm('Remove this student?')" style="background-color: #e74c3c; padding: 0.3rem 0.6rem; font-size: 0.9rem;">Remove</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No students enrolled in this course yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

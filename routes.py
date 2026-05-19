@@ -210,3 +210,55 @@ def delete_course(course_id):
         flash(f'Error deleting course: {str(e)}', 'error')
     
     return redirect(url_for('main.list_courses'))
+
+# ==================== ENROLLMENT ROUTES ====================
+
+@main_bp.route('/courses/<int:course_id>/enroll', methods=['GET', 'POST'])
+def enroll_student(course_id):
+    """Enroll a student in a course"""
+    course = Course.query.get_or_404(course_id)
+    
+    if request.method == 'POST':
+        try:
+            student_id = request.form.get('student_id')
+            student = Student.query.get(student_id)
+            
+            if not student:
+                flash('Student not found!', 'error')
+                return redirect(url_for('main.enroll_student', course_id=course_id))
+            
+            # Check if already enrolled
+            if student in course.students:
+                flash(f'Student {student.name} is already enrolled in this course!', 'error')
+                return redirect(url_for('main.enroll_student', course_id=course_id))
+            
+            course.students.append(student)
+            db.session.commit()
+            
+            flash(f'Student {student.name} enrolled successfully!', 'success')
+            return redirect(url_for('main.view_course', course_id=course_id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error enrolling student: {str(e)}', 'error')
+    
+    # Get students not yet enrolled in this course
+    enrolled_student_ids = [s.id for s in course.students]
+    available_students = Student.query.filter(~Student.id.in_(enrolled_student_ids)).all()
+    
+    return render_template('enroll_student.html', course=course, available_students=available_students)
+
+@main_bp.route('/courses/<int:course_id>/remove-enrollment/<int:student_id>', methods=['GET'])
+def remove_enrollment(course_id, student_id):
+    """Remove a student from a course"""
+    course = Course.query.get_or_404(course_id)
+    student = Student.query.get_or_404(student_id)
+    
+    try:
+        course.students.remove(student)
+        db.session.commit()
+        flash(f'Student {student.name} removed from {course.name}!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error removing student: {str(e)}', 'error')
+    
+    return redirect(url_for('main.view_course', course_id=course_id))

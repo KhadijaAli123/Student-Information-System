@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Students - Student Information System{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Student Management</h1>
+    <a href="{{ url_for('main.add_student') }}" class="btn btn-success">+ Add New Student</a>
+</div>
+
+{% if students %}
+<table>
+    <thead>
+        <tr>
+            <th>Roll Number</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Enrollment Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for student in students %}
+        <tr>
+            <td>{{ student.roll_number }}</td>
+            <td>{{ student.name }}</td>
+            <td>{{ student.email }}</td>
+            <td>{{ student.phone or 'N/A' }}</td>
+            <td>{{ student.enrollment_date.strftime('%Y-%m-%d') if student.enrollment_date else 'N/A' }}</td>
+            <td>
+                <a href="{{ url_for('main.view_student', student_id=student.id) }}" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">View</a>
+                <a href="{{ url_for('main.edit_student', student_id=student.id) }}" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Edit</a>
+                <a href="{{ url_for('main.delete_student', student_id=student.id) }}" class="btn" onclick="return confirm('Are you sure?')" style="padding: 0.3rem 0.6rem; font-size: 0.9rem; background-color: #e74c3c;">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;">
+    <p>No students found. <a href="{{ url_for('main.add_student') }}">Add a new student</a></p>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Student Profile - Student Information System{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Student Profile</h1>
+    <div>
+        <a href="{{ url_for('main.edit_student', student_id=student.id) }}" class="btn">Edit</a>
+        <a href="{{ url_for('main.delete_student', student_id=student.id) }}" class="btn" onclick="return confirm('Are you sure?')" style="background-color: #e74c3c;">Delete</a>
+    </div>
+</div>
+
+<div style="background: white; padding: 2rem; border-radius: 8px;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+            <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+            <p><strong>Full Name:</strong> {{ student.name }}</p>
+            <p><strong>Email:</strong> {{ student.email }}</p>
+            <p><strong>Phone:</strong> {{ student.phone or 'N/A' }}</p>
+        </div>
+        <div>
+            <p><strong>Date of Birth:</strong> {{ student.date_of_birth.strftime('%Y-%m-%d') if student.date_of_birth else 'N/A' }}</p>
+            <p><strong>Address:</strong> {{ student.address or 'N/A' }}</p>
+            <p><strong>Enrollment Date:</strong> {{ student.enrollment_date.strftime('%Y-%m-%d') if student.enrollment_date else 'N/A' }}</p>
+        </div>
+    </div>
+</div>
+
+<div style="margin-top: 2rem;">
+    <a href="{{ url_for('main.list_students') }}" class="btn">← Back to Students</a>
+</div>
+{% endblock %}

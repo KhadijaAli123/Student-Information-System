@@ -120,3 +120,93 @@ def delete_student(student_id):
         flash(f'Error deleting student: {str(e)}', 'error')
     
     return redirect(url_for('main.list_students'))
+
+# ==================== COURSE ROUTES ====================
+
+@main_bp.route('/courses')
+def list_courses():
+    """Display all courses"""
+    courses = Course.query.all()
+    return render_template('courses_list.html', courses=courses)
+
+@main_bp.route('/courses/add', methods=['GET', 'POST'])
+def add_course():
+    """Add a new course"""
+    if request.method == 'POST':
+        try:
+            course_code = request.form.get('course_code')
+            name = request.form.get('name')
+            description = request.form.get('description')
+            credits = request.form.get('credits', 3)
+            semester = request.form.get('semester')
+            
+            # Check if course already exists
+            if Course.query.filter_by(course_code=course_code).first():
+                flash(f'Course with code {course_code} already exists!', 'error')
+                return redirect(url_for('main.add_course'))
+            
+            new_course = Course(
+                course_code=course_code,
+                name=name,
+                description=description,
+                credits=int(credits),
+                semester=int(semester) if semester else None
+            )
+            
+            db.session.add(new_course)
+            db.session.commit()
+            
+            flash(f'Course {name} added successfully!', 'success')
+            return redirect(url_for('main.list_courses'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error adding course: {str(e)}', 'error')
+            return redirect(url_for('main.add_course'))
+    
+    return render_template('add_course.html')
+
+@main_bp.route('/courses/<int:course_id>')
+def view_course(course_id):
+    """View a specific course"""
+    course = Course.query.get_or_404(course_id)
+    return render_template('view_course.html', course=course)
+
+@main_bp.route('/courses/<int:course_id>/edit', methods=['GET', 'POST'])
+def edit_course(course_id):
+    """Edit a course"""
+    course = Course.query.get_or_404(course_id)
+    
+    if request.method == 'POST':
+        try:
+            course.course_code = request.form.get('course_code')
+            course.name = request.form.get('name')
+            course.description = request.form.get('description')
+            course.credits = int(request.form.get('credits', 3))
+            
+            semester = request.form.get('semester')
+            course.semester = int(semester) if semester else None
+            
+            db.session.commit()
+            flash(f'Course {course.name} updated successfully!', 'success')
+            return redirect(url_for('main.view_course', course_id=course.id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating course: {str(e)}', 'error')
+    
+    return render_template('edit_course.html', course=course)
+
+@main_bp.route('/courses/<int:course_id>/delete', methods=['GET', 'POST'])
+def delete_course(course_id):
+    """Delete a course"""
+    course = Course.query.get_or_404(course_id)
+    
+    try:
+        course_name = course.name
+        db.session.delete(course)
+        db.session.commit()
+        flash(f'Course {course_name} deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting course: {str(e)}', 'error')
+    
+    return redirect(url_for('main.list_courses'))

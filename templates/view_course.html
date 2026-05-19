@@ -6,6 +6,7 @@
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
     <h1>{{ course.name }}</h1>
     <div>
+        <a href="{{ url_for('main.enroll_student', course_id=course.id) }}" class="btn" style="background-color: #27ae60;">Enroll Student</a>
         <a href="{{ url_for('main.edit_course', course_id=course.id) }}" class="btn">Edit</a>
         <a href="{{ url_for('main.delete_course', course_id=course.id) }}" class="btn" onclick="return confirm('Are you sure?')" style="background-color: #e74c3c;">Delete</a>
     </div>

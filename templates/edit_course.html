@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Course - Student Information System{% endblock %}
+
+{% block content %}
+<h1>Edit Course</h1>
+
+<div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; margin-top: 2rem;">
+    <form method="POST" action="{{ url_for('main.edit_course', course_id=course.id) }}">
+        <div style="margin-bottom: 1.5rem;">
+            <label for="course_code">Course Code <span style="color: red;">*</span></label><br>
+            <input type="text" id="course_code" name="course_code" value="{{ course.course_code }}" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="name">Course Name <span style="color: red;">*</span></label><br>
+            <input type="text" id="name" name="name" value="{{ course.name }}" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="description">Course Description</label><br>
+            <textarea id="description" name="description" rows="4" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">{{ course.description or '' }}</textarea>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="credits">Credits <span style="color: red;">*</span></label><br>
+            <input type="number" id="credits" name="credits" value="{{ course.credits }}" min="1" max="6" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="semester">Semester</label><br>
+            <input type="number" id="semester" name="semester" value="{{ course.semester or '' }}" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <button type="submit" class="btn btn-success">Update Course</button>
+            <a href="{{ url_for('main.list_courses') }}" class="btn" style="background-color: #95a5a6;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

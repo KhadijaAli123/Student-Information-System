@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, jsonif
 from app import db
 from models import Student, Course, Grade
 from datetime import datetime
+from grade_utils import calculate_gpa, calculate_student_percentage, get_grade_letter, get_total_credits
 
 main_bp = Blueprint('main', __name__)
 
@@ -267,3 +268,124 @@ def remove_enrollment(course_id, student_id):
         flash(f'Error removing student: {str(e)}', 'error')
     
     return redirect(url_for('main.view_course', course_id=course_id))
+
+# ==================== GRADE ROUTES ====================
+
+@main_bp.route('/grades')
+def list_grades():
+    """Display all grades with search functionality"""
+    search = request.args.get('search', '')
+    
+    if search:
+        grades = Grade.query.filter(
+            (Student.name.ilike(f'%{search}%')) | 
+            (Course.course_code.ilike(f'%{search}%'))
+        ).join(Student).join(Course).all()
+    else:
+        grades = Grade.query.all()
+    
+    return render_template('grades_list.html', grades=grades, search=search)
+
+@main_bp.route('/grades/add', methods=['GET', 'POST'])
+def add_grade():
+    """Add a new grade record"""
+    if request.method == 'POST':
+        try:
+            student_id = request.form.get('student_id')
+            course_id = request.form.get('course_id')
+            marks_obtained = request.form.get('marks_obtained')
+            total_marks = float(request.form.get('total_marks', 100))
+            grade_letter = request.form.get('grade')
+            
+            student = Student.query.get(student_id)
+            course = Course.query.get(course_id)
+            
+            if not student or not course:
+                flash('Invalid student or course selection', 'error')
+                return redirect(url_for('main.add_grade'))
+            
+            # Check if grade already exists
+            existing = Grade.query.filter_by(
+                student_id=student_id,
+                course_id=course_id
+            ).first()
+            
+            if existing:
+                flash(f'Grade already exists for this student-course combination', 'error')
+                return redirect(url_for('main.add_grade'))
+            
+            marks_obtained = float(marks_obtained)
+            percentage = (marks_obtained / total_marks) * 100
+            
+            # Auto-calculate grade if not provided
+            if not grade_letter:
+                grade_letter = get_grade_letter(percentage)
+            
+            new_grade = Grade(
+                student_id=student_id,
+                course_id=course_id,
+                marks_obtained=marks_obtained,
+                total_marks=total_marks,
+                grade=grade_letter
+            )
+            
+            db.session.add(new_grade)
+            db.session.commit()
+            
+            flash(f'Grade recorded successfully for {student.name}!', 'success')
+            return redirect(url_for('main.list_grades'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error recording grade: {str(e)}', 'error')
+            return redirect(url_for('main.add_grade'))
+    
+    students = Student.query.all()
+    courses = Course.query.all()
+    return render_template('add_grade.html', students=students, courses=courses)
+
+@main_bp.route('/grades/<int:grade_id>/edit', methods=['GET', 'POST'])
+def edit_grade(grade_id):
+    """Edit a grade record"""
+    grade = Grade.query.get_or_404(grade_id)
+    
+    if request.method == 'POST':
+        try:
+            marks_obtained = float(request.form.get('marks_obtained'))
+            total_marks = float(request.form.get('total_marks', 100))
+            grade_letter = request.form.get('grade')
+            
+            grade.marks_obtained = marks_obtained
+            grade.total_marks = total_marks
+            
+            percentage = (marks_obtained / total_marks) * 100
+            
+            if not grade_letter:
+                grade.grade = get_grade_letter(percentage)
+            else:
+                grade.grade = grade_letter
+            
+            db.session.commit()
+            flash('Grade updated successfully!', 'success')
+            return redirect(url_for('main.list_grades'))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error updating grade: {str(e)}', 'error')
+    
+    return render_template('edit_grade.html', grade=grade)
+
+@main_bp.route('/grades/<int:grade_id>/delete', methods=['GET', 'POST'])
+def delete_grade(grade_id):
+    """Delete a grade record"""
+    grade = Grade.query.get_or_404(grade_id)
+    
+    try:
+        student_name = grade.student.name
+        course_name = grade.course.name
+        db.session.delete(grade)
+        db.session.commit()
+        flash(f'Grade deleted for {student_name} in {course_name}', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting grade: {str(e)}', 'error')
+    
+    return redirect(url_for('main.list_grades'))

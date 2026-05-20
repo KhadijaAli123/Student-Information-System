@@ -6,6 +6,7 @@
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
     <h1>Student Profile</h1>
     <div>
+        <a href="{{ url_for('main.view_transcript', student_id=student.id) }}" class="btn" style="background-color: #16a085;">View Transcript</a>
         <a href="{{ url_for('main.edit_student', student_id=student.id) }}" class="btn">Edit</a>
         <a href="{{ url_for('main.delete_student', student_id=student.id) }}" class="btn" onclick="return confirm('Are you sure?')" style="background-color: #e74c3c;">Delete</a>
     </div>

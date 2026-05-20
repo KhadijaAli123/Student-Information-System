@@ -389,3 +389,20 @@ def delete_grade(grade_id):
         flash(f'Error deleting grade: {str(e)}', 'error')
     
     return redirect(url_for('main.list_grades'))
+
+# ==================== TRANSCRIPT ROUTES ====================
+
+@main_bp.route('/students/<int:student_id>/transcript')
+def view_transcript(student_id):
+    """Display student academic transcript with GPA and performance metrics"""
+    student = Student.query.get_or_404(student_id)
+    
+    gpa = calculate_gpa(student)
+    overall_percentage = calculate_student_percentage(student)
+    total_credits = get_total_credits(student)
+    
+    return render_template('transcript.html',
+                         student=student,
+                         gpa=gpa,
+                         overall_percentage=overall_percentage,
+                         total_credits=total_credits)

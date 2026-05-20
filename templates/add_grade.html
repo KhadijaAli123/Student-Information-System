@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Record Grade - Student Information System{% endblock %}
+
+{% block content %}
+<h1>Record New Grade</h1>
+
+<div style="background: white; padding: 2rem; border-radius: 8px; max-width: 600px; margin-top: 2rem;">
+    <form method="POST" action="{{ url_for('main.add_grade') }}">
+        <div style="margin-bottom: 1.5rem;">
+            <label for="student_id">Student <span style="color: red;">*</span></label><br>
+            <select id="student_id" name="student_id" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">-- Select Student --</option>
+                {% for student in students %}
+                <option value="{{ student.id }}">{{ student.roll_number }} - {{ student.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="course_id">Course <span style="color: red;">*</span></label><br>
+            <select id="course_id" name="course_id" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">-- Select Course --</option>
+                {% for course in courses %}
+                <option value="{{ course.id }}">{{ course.course_code }} - {{ course.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="marks_obtained">Marks Obtained <span style="color: red;">*</span></label><br>
+            <input type="number" id="marks_obtained" name="marks_obtained" min="0" max="100" step="0.5" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;" placeholder="e.g., 85.5">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="total_marks">Total Marks <span style="color: red;">*</span></label><br>
+            <input type="number" id="total_marks" name="total_marks" value="100" min="1" step="0.5" required style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+            <label for="grade">Grade Letter</label><br>
+            <select id="grade" name="grade" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+                <option value="">-- Auto Calculate --</option>
+                <option value="A">A (Excellent)</option>
+                <option value="B">B (Good)</option>
+                <option value="C">C (Average)</option>
+                <option value="D">D (Pass)</option>
+                <option value="F">F (Fail)</option>
+            </select>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <button type="submit" class="btn btn-success">Record Grade</button>
+            <a href="{{ url_for('main.list_grades') }}" class="btn" style="background-color: #95a5a6;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

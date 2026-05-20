@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Student Transcript - Student Information System{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Student Transcript</h1>
+    <a href="{{ url_for('main.list_students') }}" class="btn">← Back</a>
+</div>
+
+<div style="background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div>
+            <p><strong>Student Name:</strong> {{ student.name }}</p>
+            <p><strong>Roll Number:</strong> {{ student.roll_number }}</p>
+            <p><strong>Email:</strong> {{ student.email }}</p>
+        </div>
+        <div>
+            <p><strong>Phone:</strong> {{ student.phone or 'N/A' }}</p>
+            <p><strong>Enrollment Date:</strong> {{ student.enrollment_date.strftime('%d-%m-%Y') if student.enrollment_date else 'N/A' }}</p>
+            <p><strong>Total Courses:</strong> {{ student.courses|length }}</p>
+        </div>
+    </div>
+</div>
+
+{% if student.grades %}
+<div style="background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem;">
+    <h2>Academic Record</h2>
+    <table style="width: 100%;">
+        <thead>
+            <tr>
+                <th>Course Code</th>
+                <th>Course Name</th>
+                <th>Credits</th>
+                <th>Marks Obtained</th>
+                <th>Total Marks</th>
+                <th>Percentage</th>
+                <th>Grade</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for grade in student.grades %}
+            <tr>
+                <td>{{ grade.course.course_code }}</td>
+                <td>{{ grade.course.name }}</td>
+                <td>{{ grade.course.credits }}</td>
+                <td>{{ grade.marks_obtained or 'N/A' }}</td>
+                <td>{{ grade.total_marks }}</td>
+                <td>{% if grade.marks_obtained %}{{ "%.1f"|format((grade.marks_obtained / grade.total_marks) * 100) }}%{% else %}N/A{% endif %}</td>
+                <td><strong>{{ grade.grade or 'N/A' }}</strong></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="background: white; padding: 2rem; border-radius: 8px;">
+    <h2>Performance Summary</h2>
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;">
+        <div style="padding: 1rem; background: #f0f0f0; border-radius: 4px;">
+            <p style="color: #666; font-size: 0.9rem;">Total Courses</p>
+            <p style="font-size: 1.5rem; font-weight: bold;">{{ student.grades|length }}</p>
+        </div>
+        <div style="padding: 1rem; background: #f0f0f0; border-radius: 4px;">
+            <p style="color: #666; font-size: 0.9rem;">Overall Percentage</p>
+            <p style="font-size: 1.5rem; font-weight: bold;">{{ overall_percentage }}%</p>
+        </div>
+        <div style="padding: 1rem; background: #f0f0f0; border-radius: 4px;">
+            <p style="color: #666; font-size: 0.9rem;">Cumulative GPA</p>
+            <p style="font-size: 1.5rem; font-weight: bold;">{{ gpa }}/4.0</p>
+        </div>
+        <div style="padding: 1rem; background: #f0f0f0; border-radius: 4px;">
+            <p style="color: #666; font-size: 0.9rem;">Total Credits</p>
+            <p style="font-size: 1.5rem; font-weight: bold;">{{ total_credits }}</p>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;">
+    <p>No grades recorded for this student yet.</p>
+</div>
+{% endif %}
+{% endblock %}

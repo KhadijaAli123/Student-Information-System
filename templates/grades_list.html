@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Grades - Student Information System{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Grade Management</h1>
+    <a href="{{ url_for('main.add_grade') }}" class="btn btn-success">+ Record New Grade</a>
+</div>
+
+<div style="margin-bottom: 2rem;">
+    <form method="GET" action="{{ url_for('main.list_grades') }}" style="display: flex; gap: 1rem;">
+        <input type="text" name="search" placeholder="Search by student name or course code..." value="{{ search or '' }}" style="flex: 1; padding: 0.5rem; border: 1px solid #ddd; border-radius: 4px;">
+        <button type="submit" class="btn">Search</button>
+    </form>
+</div>
+
+{% if grades %}
+<table>
+    <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Roll Number</th>
+            <th>Course Code</th>
+            <th>Course Name</th>
+            <th>Marks Obtained</th>
+            <th>Total Marks</th>
+            <th>Grade</th>
+            <th>Percentage</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for grade in grades %}
+        <tr>
+            <td>{{ grade.student.name }}</td>
+            <td>{{ grade.student.roll_number }}</td>
+            <td>{{ grade.course.course_code }}</td>
+            <td>{{ grade.course.name }}</td>
+            <td>{{ grade.marks_obtained or 'N/A' }}</td>
+            <td>{{ grade.total_marks }}</td>
+            <td><strong>{{ grade.grade or 'N/A' }}</strong></td>
+            <td>{% if grade.marks_obtained %}{{ "%.1f"|format((grade.marks_obtained / grade.total_marks) * 100) }}%{% else %}N/A{% endif %}</td>
+            <td>
+                <a href="{{ url_for('main.edit_grade', grade_id=grade.id) }}" class="btn" style="padding: 0.3rem 0.6rem; font-size: 0.9rem;">Edit</a>
+                <a href="{{ url_for('main.delete_grade', grade_id=grade.id) }}" class="btn" onclick="return confirm('Delete this grade?')" style="padding: 0.3rem 0.6rem; font-size: 0.9rem; background-color: #e74c3c;">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p style="margin-top: 1rem; color: #666;">Total Records: {{ grades|length }}</p>
+{% else %}
+<div style="background: white; padding: 2rem; border-radius: 8px; text-align: center;">
+    <p>No grades found. <a href="{{ url_for('main.add_grade') }}">Record a new grade</a></p>
+</div>
+{% endif %}
+{% endblock %}

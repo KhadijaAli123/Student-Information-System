@@ -31,10 +31,37 @@
 </div>
 
 <div style="background: white; padding: 2rem; border-radius: 8px; margin-top: 2rem;">
-    <p>This system helps manage student information, courses, grades and enrollments efficiently.</p>
+    <p>This system helps manage student information, courses, grades and reports efficiently.</p>
     <div style="margin-top: 1rem;">
         <a href="/students" class="btn" style="margin-right: 1rem;">Manage Students</a>
-        <a href="/courses" class="btn">Manage Courses</a>
+        <a href="/courses" class="btn" style="margin-right: 1rem;">Manage Courses</a>
+        <a href="/reports" class="btn">View Reports</a>
     </div>
 </div>
+
+{% if top_students %}
+<div style="margin-top: 2rem; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+    <h2>Top Students by GPA</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Roll Number</th>
+                <th>GPA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student, gpa in top_students %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ student.name }}</td>
+                <td>{{ student.roll_number }}</td>
+                <td>{{ gpa }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
 {% endblock %}

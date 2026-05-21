@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
 from app import db
-from models import Student, Course, Grade
+from models import Student, Course, Grade, enrollments
 from datetime import datetime
-from grade_utils import calculate_gpa, calculate_student_percentage, get_grade_letter, get_total_credits
+from grade_utils import calculate_gpa, calculate_student_percentage, get_grade_letter, get_total_credits, get_course_grades_stats
 
 main_bp = Blueprint('main', __name__)
 
@@ -14,11 +14,21 @@ def index():
     total_enrollments = db.session.query(enrollments).count()
     total_grades = Grade.query.count()
     
+    all_students = Student.query.all()
+    student_gpa_values = [calculate_gpa(student) for student in all_students if student.grades]
+    average_gpa = round(sum(student_gpa_values) / len(student_gpa_values), 2) if student_gpa_values else 0.0
+    top_students = sorted(
+        [(student, calculate_gpa(student)) for student in all_students if student.grades],
+        key=lambda item: item[1], reverse=True
+    )[:3]
+    
     return render_template('index.html', 
                          total_students=total_students,
                          total_courses=total_courses,
                          total_enrollments=total_enrollments,
-                         total_grades=total_grades)
+                         total_grades=total_grades,
+                         average_gpa=average_gpa,
+                         top_students=top_students)
 
 @main_bp.route('/health')
 def health():
@@ -406,3 +416,50 @@ def view_transcript(student_id):
                          gpa=gpa,
                          overall_percentage=overall_percentage,
                          total_credits=total_credits)
+
+@main_bp.route('/reports')
+def reports():
+    """Display dashboard reports and course performance summaries"""
+    total_students = Student.query.count()
+    total_courses = Course.query.count()
+    total_enrollments = db.session.query(enrollments).count()
+    total_grades = Grade.query.count()
+
+    students = Student.query.all()
+    graded_student_records = [
+        (student, calculate_gpa(student)) for student in students if student.grades
+    ]
+    top_students = sorted(graded_student_records, key=lambda item: item[1], reverse=True)[:5]
+    average_gpa = round(sum([gpa for _, gpa in graded_student_records]) / len(graded_student_records), 2) if graded_student_records else 0.0
+
+    courses = Course.query.all()
+    course_reports = []
+    for course in courses:
+        stats = get_course_grades_stats(course)
+        course_reports.append({
+            'course': course,
+            'stats': stats,
+            'enrolled': len(course.students)
+        })
+
+    distribution = {
+        'A': 0,
+        'B': 0,
+        'C': 0,
+        'D': 0,
+        'F': 0,
+        'N/A': 0
+    }
+    for grade in Grade.query.all():
+        key = grade.grade if grade.grade in distribution else 'N/A'
+        distribution[key] += 1
+
+    return render_template('reports.html',
+                         total_students=total_students,
+                         total_courses=total_courses,
+                         total_enrollments=total_enrollments,
+                         total_grades=total_grades,
+                         average_gpa=average_gpa,
+                         top_students=top_students,
+                         course_reports=course_reports,
+                         distribution=distribution)

@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Student Information System{% endblock %}
+
+{% block content %}
+<h1>Reports Dashboard</h1>
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 1rem; margin: 2rem 0;">
+    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+        <h3>Total Students</h3>
+        <p style="font-size: 2rem; font-weight: bold;">{{ total_students }}</p>
+    </div>
+    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+        <h3>Total Courses</h3>
+        <p style="font-size: 2rem; font-weight: bold;">{{ total_courses }}</p>
+    </div>
+    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+        <h3>Total Enrollments</h3>
+        <p style="font-size: 2rem; font-weight: bold;">{{ total_enrollments }}</p>
+    </div>
+    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+        <h3>Grades Recorded</h3>
+        <p style="font-size: 2rem; font-weight: bold;">{{ total_grades }}</p>
+    </div>
+</div>
+
+<div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); margin-bottom: 2rem;">
+    <h2>Overall GPA Summary</h2>
+    <p style="font-size: 1.5rem; font-weight: bold;">Average GPA: {{ average_gpa }}</p>
+    <p style="color: #666;">This is the average GPA for all students who have recorded grades.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+        <h2>Top 5 Students by GPA</h2>
+        {% if top_students %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Name</th>
+                    <th>Roll Number</th>
+                    <th>GPA</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student, gpa in top_students %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.roll_number }}</td>
+                    <td>{{ gpa }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No graded students found yet.</p>
+        {% endif %}
+    </div>
+
+    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08);">
+        <h2>Grade Distribution</h2>
+        <ul style="list-style: none; padding: 0;">
+            <li><strong>A:</strong> {{ distribution['A'] }}</li>
+            <li><strong>B:</strong> {{ distribution['B'] }}</li>
+            <li><strong>C:</strong> {{ distribution['C'] }}</li>
+            <li><strong>D:</strong> {{ distribution['D'] }}</li>
+            <li><strong>F:</strong> {{ distribution['F'] }}</li>
+            <li><strong>N/A:</strong> {{ distribution['N/A'] }}</li>
+        </ul>
+    </div>
+</div>
+
+<div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.08); margin-bottom: 2rem;">
+    <h2>Course Performance Summary</h2>
+    {% if course_reports %}
+    <table>
+        <thead>
+            <tr>
+                <th>Course</th>
+                <th>Enrolled</th>
+                <th>Average Score</th>
+                <th>Highest</th>
+                <th>Lowest</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for report in course_reports %}
+            <tr>
+                <td>{{ report.course.course_code }} - {{ report.course.name }}</td>
+                <td>{{ report.enrolled }}</td>
+                <td>{{ report.stats.average if report.stats else 'N/A' }}</td>
+                <td>{{ report.stats.highest if report.stats else 'N/A' }}</td>
+                <td>{{ report.stats.lowest if report.stats else 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No course performance data available yet.</p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 2rem;">
+    <a href="/" class="btn">← Back to Dashboard</a>
+</div>
+{% endblock %}

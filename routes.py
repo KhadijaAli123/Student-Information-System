@@ -1,10 +1,46 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash, session, g
 from app import db
-from models import Student, Course, Grade, enrollments
+from models import Student, Course, Grade, User, enrollments
 from datetime import datetime
+from functools import wraps
+from werkzeug.security import generate_password_hash, check_password_hash
 from grade_utils import calculate_gpa, calculate_student_percentage, get_grade_letter, get_total_credits, get_course_grades_stats
 
 main_bp = Blueprint('main', __name__)
+
+
+def login_required(view):
+    @wraps(view)
+    def wrapped_view(**kwargs):
+        if g.current_user is None:
+            flash('Please login to access this page', 'error')
+            return redirect(url_for('main.login'))
+        return view(**kwargs)
+    return wrapped_view
+
+
+def role_required(role):
+    def decorator(view):
+        @wraps(view)
+        def wrapped_view(**kwargs):
+            if g.current_user is None:
+                flash('Please login to access this page', 'error')
+                return redirect(url_for('main.login'))
+            if g.current_user.role != role:
+                flash('You do not have permission to access this page', 'error')
+                return redirect(url_for('main.index'))
+            return view(**kwargs)
+        return wrapped_view
+    return decorator
+
+
+@main_bp.before_app_request
+def load_current_user():
+    user_id = session.get('user_id')
+    g.current_user = None
+    if user_id:
+        g.current_user = User.query.get(user_id)
+
 
 @main_bp.route('/')
 def index():
@@ -35,15 +71,76 @@ def health():
     """Health check endpoint"""
     return jsonify({'status': 'ok', 'message': 'Student Information System is running'}), 200
 
+@main_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        user = User.query.filter_by(email=email).first()
+        
+        if user and check_password_hash(user.password_hash, password):
+            session.clear()
+            session['user_id'] = user.id
+            session['user_email'] = user.email
+            session['user_role'] = user.role
+            flash(f'Welcome back, {user.email}', 'success')
+            return redirect(url_for('main.index'))
+
+        flash('Invalid email or password', 'error')
+        return redirect(url_for('main.login'))
+
+    return render_template('login.html')
+
+@main_bp.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        if password != confirm_password:
+            flash('Passwords do not match', 'error')
+            return redirect(url_for('main.register'))
+
+        if User.query.filter_by(email=email).first():
+            flash('Email is already registered', 'error')
+            return redirect(url_for('main.register'))
+
+        role = 'student'
+        if User.query.count() == 0:
+            role = 'admin'
+
+        new_user = User(
+            email=email,
+            password_hash=generate_password_hash(password),
+            role=role
+        )
+        
+        db.session.add(new_user)
+        db.session.commit()
+        flash('Registration successful. You can login now.', 'success')
+        return redirect(url_for('main.login'))
+
+    return render_template('register.html')
+
+@main_bp.route('/logout')
+def logout():
+    session.clear()
+    flash('You have been logged out', 'success')
+    return redirect(url_for('main.login'))
+
 # ==================== STUDENT ROUTES ====================
 
 @main_bp.route('/students')
+@login_required
 def list_students():
     """Display all students"""
     students = Student.query.all()
     return render_template('students_list.html', students=students)
 
 @main_bp.route('/students/add', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def add_student():
     """Add a new student"""
     if request.method == 'POST':
@@ -89,12 +186,15 @@ def add_student():
     return render_template('add_student.html')
 
 @main_bp.route('/students/<int:student_id>')
+@login_required
 def view_student(student_id):
     """View a specific student"""
     student = Student.query.get_or_404(student_id)
     return render_template('view_student.html', student=student)
 
 @main_bp.route('/students/<int:student_id>/edit', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def edit_student(student_id):
     """Edit a student"""
     student = Student.query.get_or_404(student_id)
@@ -122,6 +222,8 @@ def edit_student(student_id):
     return render_template('edit_student.html', student=student)
 
 @main_bp.route('/students/<int:student_id>/delete', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def delete_student(student_id):
     """Delete a student"""
     student = Student.query.get_or_404(student_id)
@@ -140,12 +242,15 @@ def delete_student(student_id):
 # ==================== COURSE ROUTES ====================
 
 @main_bp.route('/courses')
+@login_required
 def list_courses():
     """Display all courses"""
     courses = Course.query.all()
     return render_template('courses_list.html', courses=courses)
 
 @main_bp.route('/courses/add', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def add_course():
     """Add a new course"""
     if request.method == 'POST':
@@ -182,12 +287,15 @@ def add_course():
     return render_template('add_course.html')
 
 @main_bp.route('/courses/<int:course_id>')
+@login_required
 def view_course(course_id):
     """View a specific course"""
     course = Course.query.get_or_404(course_id)
     return render_template('view_course.html', course=course)
 
 @main_bp.route('/courses/<int:course_id>/edit', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def edit_course(course_id):
     """Edit a course"""
     course = Course.query.get_or_404(course_id)
@@ -212,6 +320,8 @@ def edit_course(course_id):
     return render_template('edit_course.html', course=course)
 
 @main_bp.route('/courses/<int:course_id>/delete', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def delete_course(course_id):
     """Delete a course"""
     course = Course.query.get_or_404(course_id)
@@ -230,6 +340,8 @@ def delete_course(course_id):
 # ==================== ENROLLMENT ROUTES ====================
 
 @main_bp.route('/courses/<int:course_id>/enroll', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def enroll_student(course_id):
     """Enroll a student in a course"""
     course = Course.query.get_or_404(course_id)
@@ -264,6 +376,8 @@ def enroll_student(course_id):
     return render_template('enroll_student.html', course=course, available_students=available_students)
 
 @main_bp.route('/courses/<int:course_id>/remove-enrollment/<int:student_id>', methods=['GET'])
+@login_required
+@role_required('admin')
 def remove_enrollment(course_id, student_id):
     """Remove a student from a course"""
     course = Course.query.get_or_404(course_id)
@@ -282,6 +396,7 @@ def remove_enrollment(course_id, student_id):
 # ==================== GRADE ROUTES ====================
 
 @main_bp.route('/grades')
+@login_required
 def list_grades():
     """Display all grades with search functionality"""
     search = request.args.get('search', '')
@@ -297,6 +412,8 @@ def list_grades():
     return render_template('grades_list.html', grades=grades, search=search)
 
 @main_bp.route('/grades/add', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def add_grade():
     """Add a new grade record"""
     if request.method == 'POST':
@@ -354,6 +471,8 @@ def add_grade():
     return render_template('add_grade.html', students=students, courses=courses)
 
 @main_bp.route('/grades/<int:grade_id>/edit', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def edit_grade(grade_id):
     """Edit a grade record"""
     grade = Grade.query.get_or_404(grade_id)
@@ -384,6 +503,8 @@ def edit_grade(grade_id):
     return render_template('edit_grade.html', grade=grade)
 
 @main_bp.route('/grades/<int:grade_id>/delete', methods=['GET', 'POST'])
+@login_required
+@role_required('admin')
 def delete_grade(grade_id):
     """Delete a grade record"""
     grade = Grade.query.get_or_404(grade_id)
@@ -403,6 +524,7 @@ def delete_grade(grade_id):
 # ==================== TRANSCRIPT ROUTES ====================
 
 @main_bp.route('/students/<int:student_id>/transcript')
+@login_required
 def view_transcript(student_id):
     """Display student academic transcript with GPA and performance metrics"""
     student = Student.query.get_or_404(student_id)
@@ -418,6 +540,7 @@ def view_transcript(student_id):
                          total_credits=total_credits)
 
 @main_bp.route('/reports')
+@login_required
 def reports():
     """Display dashboard reports and course performance summaries"""
     total_students = Student.query.count()

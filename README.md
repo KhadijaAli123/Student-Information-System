@@ -69,6 +69,22 @@ python app.py
 
 The application will run on `http://localhost:5000`
 
+## First User and Admin Access
+
+- The first user to register is assigned the `admin` role automatically.
+- Subsequent users are assigned the `student` role by default.
+- Admin users can manage students, courses, enrollments, grades, and reports.
+
+## Features
+
+- User login and registration
+- Role-based access control for admin users
+- Student CRUD operations
+- Course CRUD operations
+- Enrollment management
+- Grade tracking and transcript generation
+- Dashboard reports with GPA and grade distribution metrics
+
 ## Database Models
 
 ### Student

@@ -5,6 +5,12 @@
 {% block content %}
 <h1>Welcome to Student Information System</h1>
 
+{% if g.current_user %}
+    <p style="margin-top: 1rem; font-size: 1.1rem; color: #555;">Hello {{ g.current_user.email }}! Manage students, courses, grades, and reports from a single dashboard.</p>
+{% else %}
+    <p style="margin-top: 1rem; font-size: 1.1rem; color: #555;">Login or register to manage your student information system safely and securely.</p>
+{% endif %}
+
 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 2rem; margin: 2rem 0;">
     <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
         <h2 style="font-size: 1rem; color: #666;">Total Students</h2>

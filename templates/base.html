@@ -143,6 +143,9 @@
         <div class="nav-right">
             {% if g.current_user %}
                 <a href="/profile">Profile</a>
+                {% if g.is_admin %}
+                    <a href="/reports">Admin Reports</a>
+                {% endif %}
                 <span>Logged in as {{ g.current_user.email }} ({{ g.current_user.role }})</span>
                 <a href="/logout">Logout</a>
             {% else %}

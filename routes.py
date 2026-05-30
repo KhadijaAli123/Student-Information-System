@@ -38,8 +38,10 @@ def role_required(role):
 def load_current_user():
     user_id = session.get('user_id')
     g.current_user = None
+    g.is_admin = False
     if user_id:
         g.current_user = User.query.get(user_id)
+        g.is_admin = g.current_user.role == 'admin'
 
 
 @main_bp.route('/')

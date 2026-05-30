@@ -129,6 +129,12 @@ def logout():
     flash('You have been logged out', 'success')
     return redirect(url_for('main.login'))
 
+@main_bp.route('/profile')
+@login_required
+def profile():
+    """Display the current user profile"""
+    return render_template('profile.html', user=g.current_user)
+
 # ==================== STUDENT ROUTES ====================
 
 @main_bp.route('/students')

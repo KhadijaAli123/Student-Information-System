@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Student Information System{% endblock %}
+
+{% block content %}
+    <h1>Profile</h1>
+    <div style="background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.08);">
+        <p><strong>Email:</strong> {{ user.email }}</p>
+        <p><strong>Role:</strong> {{ user.role }}</p>
+        <p><strong>Account created:</strong> {{ user.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <p>This profile page was added as a small feature guided by AI GPT review.</p>
+    </div>
+{% endblock %}

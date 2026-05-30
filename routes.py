@@ -402,7 +402,7 @@ def remove_enrollment(course_id, student_id):
     
     return redirect(url_for('main.view_course', course_id=course_id))
 
-# ==================== GRADE ROUTES ====================
+# ==================== GRADE ROUTES ==================== 
 
 @main_bp.route('/grades')
 @login_required

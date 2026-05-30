@@ -9,6 +9,7 @@ from grade_utils import calculate_gpa, calculate_student_percentage, get_grade_l
 main_bp = Blueprint('main', __name__)
 
 
+# AI GPT suggested pattern: set global user context once and use it across routes for cleaner auth checks.
 def login_required(view):
     @wraps(view)
     def wrapped_view(**kwargs):

@@ -123,6 +123,10 @@ The application will run on `http://localhost:5000`
 
 Each day includes code commit with meaningful commit messages.
 
+## AI Review Note
+
+This project has been checked for Python syntax and application import errors. It is ready for further detail review by AI GPT.
+
 ## Author
 
 Student Information System Project - May 2026

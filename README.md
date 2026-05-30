@@ -110,4 +110,4 @@ The application will run on `http://localhost:5000`
 - Total Marks
 - Grade (Letter)
 - Date Recorded
-
+ 

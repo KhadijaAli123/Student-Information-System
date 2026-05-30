@@ -595,3 +595,4 @@ def reports():
                          top_students=top_students,
                          course_reports=course_reports,
                          distribution=distribution)
+ 

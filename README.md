@@ -107,7 +107,7 @@ The application will run on `http://localhost:5000`
 - Student ID (Foreign Key)
 - Course ID (Foreign Key)
 - Marks Obtained
-- Total Marks
+- Total Marks 
 - Grade (Letter)
 - Date Recorded
  

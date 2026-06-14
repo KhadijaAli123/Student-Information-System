@@ -111,4 +111,13 @@ The application will run on `http://localhost:5000`
 - Grade (Letter)
 - Date Recorded
  
- 
+### References
+Pallets Projects (2024) Flask Documentation. Available at: https://flask.palletsprojects.com/en/latest/ (Accessed: 14 June 2026).
+
+SQLAlchemy Authors (2024) SQLAlchemy Documentation. Available at: https://docs.sqlalchemy.org/en/20/ (Accessed: 14 June 2026).
+
+SQLite Consortium (2024) SQLite Official Documentation. Available at: https://www.sqlite.org/docs.html (Accessed: 14 June 2026).
+
+Werkzeug Contributors (2024) Werkzeug Documentation. Available at: https://werkzeug.palletsprojects.com/en/latest/ (Accessed: 14 June 2026).
+
+MDN Web Docs (2024) HTTP and Web Security Basics. Available at: https://developer.mozilla.org/en-US/docs/Web/HTTP (Accessed: 14 June 2026).

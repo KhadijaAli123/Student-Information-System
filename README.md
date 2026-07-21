@@ -2,20 +2,6 @@
 
 A comprehensive web-based Student Information System built with Flask and SQLite.
 
-## Project Structure
-
-```
-/
-├── app.py                 # Main Flask application
-├── models.py             # Database models (Student, Course, Grade)
-├── routes.py             # Application routes
-├── requirements.txt      # Python dependencies
-├── templates/            # HTML templates
-│   ├── base.html        # Base template
-│   └── index.html       # Home page
-└── README.md            # This file
-```
-
 ## Features (7-Day Development Plan)
 
 ### Day 1: Project Setup & Database Models ✓

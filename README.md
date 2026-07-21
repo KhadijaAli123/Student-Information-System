@@ -2,7 +2,7 @@
 
 A comprehensive web-based Student Information System built with Flask and SQLite.
 
-## Features (7-Day Development Plan)
+## Features (Development Plan)
 
 ### Day 1: Project Setup & Database Models ✓
 - Flask project initialization

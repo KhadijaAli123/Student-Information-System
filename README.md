@@ -107,3 +107,10 @@ SQLite Consortium (2024) SQLite Official Documentation. Available at: https://ww
 Werkzeug Contributors (2024) Werkzeug Documentation. Available at: https://werkzeug.palletsprojects.com/en/latest/ (Accessed: 14 June 2026).
 
 MDN Web Docs (2024) HTTP and Web Security Basics. Available at: https://developer.mozilla.org/en-US/docs/Web/HTTP (Accessed: 14 June 2026).
+OpenAI. (2025). OpenAI API Documentation. Available at: https://platform.openai.com/docs/
+
+OpenAI. (2025). GPT-4.1 Model Documentation. Available at: https://platform.openai.com/docs/models/gpt-4.1
+
+OpenAI. (2025). OpenAI Cookbook. Available at: https://cookbook.openai.com/
+
+OpenAI. (2025). Prompt Engineering Guide. OpenAI Documentation. Available at: https://platform.openai.com/docs/guides/prompt-engineering

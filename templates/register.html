@@ -17,6 +17,13 @@
             <label for="confirm_password">Confirm Password</label><br>
             <input type="password" name="confirm_password" id="confirm_password" required style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px;">
         </div>
+        <div style="margin-bottom: 1rem;">
+            <label for="role">Role</label><br>
+            <select name="role" id="role" required style="width: 100%; padding: 0.75rem; border: 1px solid #ccc; border-radius: 4px;">
+                <option value="student">Student</option>
+                <option value="admin">Admin</option>
+            </select>
+        </div>
         <button class="btn btn-success" type="submit">Register</button>
     </form>
     <p style="margin-top: 1rem;">Already have an account? <a href="{{ url_for('main.login') }}">Login here</a>.</p>

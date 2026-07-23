@@ -1,6 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash, session, g
-from app import db
-from models import Student, Course, Grade, User, enrollments
+from models import db, Student, Course, Grade, User, enrollments
 from datetime import datetime
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -100,18 +99,19 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
+        role = request.form.get('role', 'student').strip().lower()
 
         if password != confirm_password:
             flash('Passwords do not match', 'error')
             return redirect(url_for('main.register'))
 
+        if role not in {'student', 'admin'}:
+            flash('Please select a valid role', 'error')
+            return redirect(url_for('main.register'))
+
         if User.query.filter_by(email=email).first():
             flash('Email is already registered', 'error')
             return redirect(url_for('main.register'))
-
-        role = 'student'
-        if User.query.count() == 0:
-            role = 'admin'
 
         new_user = User(
             email=email,
@@ -121,7 +121,7 @@ def register():
         
         db.session.add(new_user)
         db.session.commit()
-        flash('Registration successful. You can login now.', 'success')
+        flash(f'Registration successful. You can login now as {role}.', 'success')
         return redirect(url_for('main.login'))
 
     return render_template('register.html')
@@ -142,6 +142,7 @@ def profile():
 
 @main_bp.route('/students')
 @login_required
+@role_required('admin')
 def list_students():
     """Display all students"""
     students = Student.query.all()
@@ -196,6 +197,7 @@ def add_student():
 
 @main_bp.route('/students/<int:student_id>')
 @login_required
+@role_required('admin')
 def view_student(student_id):
     """View a specific student"""
     student = Student.query.get_or_404(student_id)
@@ -252,6 +254,7 @@ def delete_student(student_id):
 
 @main_bp.route('/courses')
 @login_required
+@role_required('admin')
 def list_courses():
     """Display all courses"""
     courses = Course.query.all()
@@ -297,6 +300,7 @@ def add_course():
 
 @main_bp.route('/courses/<int:course_id>')
 @login_required
+@role_required('admin')
 def view_course(course_id):
     """View a specific course"""
     course = Course.query.get_or_404(course_id)
@@ -406,6 +410,7 @@ def remove_enrollment(course_id, student_id):
 
 @main_bp.route('/grades')
 @login_required
+@role_required('admin')
 def list_grades():
     """Display all grades with search functionality"""
     search = request.args.get('search', '')
@@ -550,6 +555,7 @@ def view_transcript(student_id):
 
 @main_bp.route('/reports')
 @login_required
+@role_required('admin')
 def reports():
     """Display dashboard reports and course performance summaries"""
     total_students = Student.query.count()

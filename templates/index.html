@@ -6,7 +6,11 @@
 <h1>Welcome to Student Information System</h1>
 
 {% if g.current_user %}
-    <p style="margin-top: 1rem; font-size: 1.1rem; color: #555;">Hello {{ g.current_user.email }}! Manage students, courses, grades, and reports from a single dashboard.</p>
+    {% if g.is_admin %}
+        <p style="margin-top: 1rem; font-size: 1.1rem; color: #555;">Hello {{ g.current_user.email }}! You are in the admin panel and can manage students, courses, grades, and reports.</p>
+    {% else %}
+        <p style="margin-top: 1rem; font-size: 1.1rem; color: #555;">Hello {{ g.current_user.email }}! Your account is set as a student account with limited access to the system.</p>
+    {% endif %}
 {% else %}
     <p style="margin-top: 1rem; font-size: 1.1rem; color: #555;">Login or register to manage your student information system safely and securely.</p>
 {% endif %}

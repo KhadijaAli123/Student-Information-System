@@ -135,16 +135,20 @@
     <nav>
         <div class="nav-left">
             <a href="/">Home</a>
-            <a href="/students">Students</a>
-            <a href="/courses">Courses</a>
-            <a href="/grades">Grades</a>
-            <a href="/reports">Reports</a>
+            {% if g.current_user and g.is_admin %}
+                <a href="/students">Students</a>
+                <a href="/courses">Courses</a>
+                <a href="/grades">Grades</a>
+                <a href="/reports">Admin Panel</a>
+            {% else %}
+                <a href="/profile">Profile</a>
+            {% endif %}
         </div>
         <div class="nav-right">
             {% if g.current_user %}
                 <a href="/profile">Profile</a>
                 {% if g.is_admin %}
-                    <a href="/reports">Admin Reports</a>
+                    <a href="/reports">Admin Panel</a>
                 {% endif %}
                 <span>Logged in as {{ g.current_user.email }} ({{ g.current_user.role }})</span>
                 <a href="/logout">Logout</a>

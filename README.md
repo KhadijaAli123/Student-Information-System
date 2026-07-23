@@ -4,7 +4,7 @@ A comprehensive web-based Student Information System built with Flask and SQLite
 
 ## Features (Development Plan)
 
-### Day 1: Project Setup & Database Models ✓
+### Day 1: Project Setup & Database Models
 - Flask project initialization
 - SQLAlchemy models (Student, Course, Grade)
 - Database configuration

@@ -114,3 +114,4 @@ OpenAI. (2025). GPT-4.1 Model Documentation. Available at: https://platform.open
 OpenAI. (2025). OpenAI Cookbook. Available at: https://cookbook.openai.com/
 
 OpenAI. (2025). Prompt Engineering Guide. OpenAI Documentation. Available at: https://platform.openai.com/docs/guides/prompt-engineering
+Project Structure: https://chatgpt.com/share/6a6c812f-4dd0-83eb-9759-eee9de70147e                                             Database Design:  https://chatgpt.com/share/6a6c8142-f77c-83eb-8888-ff6414f99e34                                             Flask CRUD Implementation: https://chatgpt.com/share/6a6c8155-9c84-83eb-af00-02a9652ccefb
